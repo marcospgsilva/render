@@ -16,7 +16,8 @@ config :render, RenderWeb.Endpoint,
   secret_key_base: "OuGE4m8RrN+uj2wL/t35dBYenokI1Y1Fs2aym55VMC6maNgd9I5Wp2Z769MRTocY",
   watchers: [
     # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 
 # ## SSL Support
