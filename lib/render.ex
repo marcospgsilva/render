@@ -6,4 +6,8 @@ defmodule Render do
   Contexts are also responsible for managing your data, regardless
   if it comes from the database, an external API or others.
   """
+
+  defdelegate start_new(particles_amount), to: Render.Particles.Supervisor
+  defdelegate particles(), to: Render.Particles.Supervisor
+  defdelegate update_direction(new_direction), to: Render.Particles.Supervisor
 end

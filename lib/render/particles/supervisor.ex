@@ -18,9 +18,10 @@ defmodule Render.Particles.Supervisor do
   @doc """
     Starts a list of child under a DynamicSupervisor via PartitionSupervisor
   """
-  def start(number_of_particles) do
+  def start_new(number_of_particles) do
     amount = String.to_integer(number_of_particles)
-    Enum.map(1..amount, fn _ -> start_child() end)
+    children = Enum.map(1..amount, fn _ -> start_child() end)
+    {:ok, children}
   end
 
   @doc """
@@ -38,23 +39,29 @@ defmodule Render.Particles.Supervisor do
     Retrieve the state from each DynamicSupervisor child.
   """
   def particles do
-    __MODULE__
-    |> DynamicSupervisor.which_children()
-    |> Enum.map_reduce([], fn server, acc ->
-      find_and_apply(server, acc, fn child, key -> retrieve_child(child, key) end)
-    end)
-    |> elem(1)
+    particles =
+      __MODULE__
+      |> DynamicSupervisor.which_children()
+      |> Enum.map_reduce([], fn server, acc ->
+        find_and_apply(server, acc, fn child, key -> retrieve_child(child, key) end)
+      end)
+      |> elem(1)
+
+    {:ok, particles}
   end
 
   def update_direction(new_direction) do
-    __MODULE__
-    |> DynamicSupervisor.which_children()
-    |> Enum.map_reduce([], fn server, acc ->
-      find_and_apply(server, acc, fn {_, pid, _, _}, _key ->
-        ParticleServer.update_direction(pid, new_direction)
+    updated_particle_servers =
+      __MODULE__
+      |> DynamicSupervisor.which_children()
+      |> Enum.map_reduce([], fn server, acc ->
+        find_and_apply(server, acc, fn {_, pid, _, _}, _key ->
+          ParticleServer.update_direction(pid, new_direction)
+        end)
       end)
-    end)
-    |> elem(1)
+      |> elem(1)
+
+    {:ok, updated_particle_servers}
   end
 
   def find_and_apply({key, _pid, _, _}, acc, fun) do

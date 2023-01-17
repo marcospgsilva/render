@@ -7,7 +7,7 @@ defmodule Render.Particles.ParticleServer do
   @x_limit 99
   @y_limit 90
   @interval 60
-  @velocity 1
+
   @initial_direction :down
 
   def start_link(_opts) do
@@ -56,7 +56,7 @@ defmodule Render.Particles.ParticleServer do
     %{position | x: change_horizontally(position), y: sum(position)}
   end
 
-  def change_horizontally(%{y: position_y, direction: :down}) when position_y >= 95,
+  def change_horizontally(%{y: position_y}) when position_y >= 90,
     do: random(:x)
 
   def change_horizontally(%{x: position_x, direction: :down}), do: position_x
@@ -64,15 +64,19 @@ defmodule Render.Particles.ParticleServer do
   def change_horizontally(%{x: position_x, direction: :right}) when position_x >= 95,
     do: random(:x)
 
-  def change_horizontally(%{x: position_x, direction: :right}), do: position_x + @velocity
+  def change_horizontally(%{x: position_x, direction: :right}), do: position_x + velocity()
 
   def change_horizontally(%{x: position_x, direction: :left}) when position_x <= 5,
     do: random(:x)
 
-  def change_horizontally(%{x: position_x, direction: :left}), do: position_x - @velocity
+  def change_horizontally(%{x: position_x, direction: :left}), do: position_x - velocity()
 
   def sum(%{y: position_y}) when position_y >= 90, do: 5
-  def sum(%{y: position_y}), do: position_y + @velocity
+  def sum(%{y: position_y}), do: position_y + velocity()
+
+  def velocity do
+    :rand.uniform(3)
+  end
 
   defp random(axis) do
     case axis do
