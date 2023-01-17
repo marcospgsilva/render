@@ -13,7 +13,8 @@ defmodule Render.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Render.PubSub},
       # Start the Endpoint (http/https)
-      RenderWeb.Endpoint
+      RenderWeb.Endpoint,
+      {PartitionSupervisor, child_spec: DynamicSupervisor, name: Render.Particles.Supervisor}
       # Start a worker by calling: Render.Worker.start_link(arg)
       # {Render.Worker, arg}
     ]
