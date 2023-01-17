@@ -1,2 +1,18 @@
-<div>
+<div class="flex flex-1 justify-center items-center flex-col">
+    <div class="flex flex-1 justify-center align-middle">
+            <button phx-click="new_direction" name="direction" type="submit" value="left" class="w-10 h-8 rounded-md bg-white m-2">Left</button>
+        <%= for value <- [1, 2, 5, 10] do %>
+            <button phx-click="new_particles" name="particles_amount" type="submit" value={"#{value}"} class="w-10 h-8 rounded-md bg-white m-2"><%= value %></button>
+        <% end %>
+            <button phx-click="new_direction" name="direction" type="submit" value="right" class="w-10 h-8 rounded-md bg-white m-2">Right</button>
+    </div>
+    <h1 class="text-white text-5xl"><%= @particles_count %></h1>
 </div>
+
+<%= for particle <- @particles do %>
+    <div style={"left: #{particle.x}%; top: #{particle.y}%;"} phx-click="delete" class="flex flex-1 h-1 w-1 absolute" phx-value-key={particle.key} phx-value-pid={particle.pid}>
+        <svg width="10" height="60">
+            <rect width="10" height="60" style="fill:white" />
+        </svg>
+    </div>
+<% end %>

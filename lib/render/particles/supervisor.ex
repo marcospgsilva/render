@@ -30,7 +30,7 @@ defmodule Render.Particles.Supervisor do
     DynamicSupervisor.start_child(
       # Using VIA we can specify the key for each DynamicSupervisor under a PartitionSupervisor.
       {:via, PartitionSupervisor, {__MODULE__, self()}},
-      {ParticleServer, []}
+      {Render.Particles.ParticleServer, []}
     )
   end
 
@@ -40,17 +40,30 @@ defmodule Render.Particles.Supervisor do
   def particles do
     __MODULE__
     |> DynamicSupervisor.which_children()
-    |> Enum.map_reduce([], &find/2)
+    |> Enum.map_reduce([], fn server, acc ->
+      find_and_apply(server, acc, fn child, key -> retrieve_child(child, key) end)
+    end)
     |> elem(1)
   end
 
-  def find({key, _pid, _, _}, acc) do
+  def update_direction(new_direction) do
+    __MODULE__
+    |> DynamicSupervisor.which_children()
+    |> Enum.map_reduce([], fn server, acc ->
+      find_and_apply(server, acc, fn {_, pid, _, _}, _key ->
+        ParticleServer.update_direction(pid, new_direction)
+      end)
+    end)
+    |> elem(1)
+  end
+
+  def find_and_apply({key, _pid, _, _}, acc, fun) do
     case DynamicSupervisor.which_children({:via, PartitionSupervisor, {__MODULE__, key}}) do
       [] ->
         {[], acc}
 
       children ->
-        state = Enum.map(children, &retrieve_child(&1, key))
+        state = Enum.map(children, fn child -> fun.(child, key) end)
         {state, state}
     end
   end
