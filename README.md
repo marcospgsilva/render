@@ -21,9 +21,6 @@ To start your Phoenix server:
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-![Cryptor CI](https://github.com/marcospgsilva/cryptor/actions/workflows/ci.yml/badge.svg)
-# Render
-
 ## Follow me
 
   * LinkedIn: https://www.linkedin.com/in/marcospgsilva/
