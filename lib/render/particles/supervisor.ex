@@ -17,9 +17,7 @@ defmodule Render.Particles.Supervisor do
   """
   def delete_particle(pid, key) do
     DynamicSupervisor.terminate_child(
-      GenServer.whereis(
-        {:via, PartitionSupervisor, {ParticlesSupervisor, String.to_integer(key)}}
-      ),
+      GenServer.whereis({:via, PartitionSupervisor, {__MODULE__, String.to_integer(key)}}),
       Helpers.pid(pid)
     )
   end
