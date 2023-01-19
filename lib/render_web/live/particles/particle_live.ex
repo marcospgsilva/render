@@ -1,9 +1,6 @@
 defmodule RenderWeb.ParticleLive do
   use RenderWeb, :live_view
 
-  alias Render.Particles.Supervisor, as: ParticlesSupervisor
-  alias IEx.Helpers
-
   @impl Phoenix.LiveView
   def mount(_params, _session, socket) do
     {:ok, assign(socket, particles: [], particles_count: 0)}
@@ -15,10 +12,9 @@ defmodule RenderWeb.ParticleLive do
         %{"value" => amount},
         socket
       ) do
-    with {:ok, _children} <- Render.start_new(amount) do
-      schedule()
-      {:noreply, socket}
-    end
+    Render.start_new(amount)
+    schedule()
+    {:noreply, socket}
   end
 
   @impl Phoenix.LiveView
@@ -27,23 +23,14 @@ defmodule RenderWeb.ParticleLive do
         %{"value" => direction},
         socket
       ) do
-    direction
-    |> String.to_atom()
-    |> Render.update_direction()
-
+    update_direction(direction)
     schedule()
     {:noreply, socket}
   end
 
   @impl Phoenix.LiveView
   def handle_event("delete", %{"key" => key, "pid" => pid}, socket) do
-    DynamicSupervisor.terminate_child(
-      GenServer.whereis(
-        {:via, PartitionSupervisor, {ParticlesSupervisor, String.to_integer(key)}}
-      ),
-      Helpers.pid(pid)
-    )
-
+    Render.delete_particle(pid, key)
     {:noreply, socket}
   end
 
@@ -53,6 +40,12 @@ defmodule RenderWeb.ParticleLive do
       schedule()
       {:noreply, assign(socket, particles: particles, particles_count: Enum.count(particles))}
     end
+  end
+
+  defp update_direction(direction) do
+    direction
+    |> String.to_atom()
+    |> Render.update_direction()
   end
 
   def schedule do

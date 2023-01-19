@@ -4,11 +4,24 @@ defmodule Render.Particles.Supervisor do
   """
   use DynamicSupervisor
 
+  alias IEx.Helpers
   alias Render.Particles.ParticleServer
   alias Render.Utils
 
   def start_link(args) do
     DynamicSupervisor.start_link(__MODULE__, args, name: __MODULE__)
+  end
+
+  @doc """
+    Terminate a DynamicSupervisor child
+  """
+  def delete_particle(pid, key) do
+    DynamicSupervisor.terminate_child(
+      GenServer.whereis(
+        {:via, PartitionSupervisor, {ParticlesSupervisor, String.to_integer(key)}}
+      ),
+      Helpers.pid(pid)
+    )
   end
 
   def init(_args) do
