@@ -2,6 +2,10 @@
 <b>Liveview re-rendering, PartitionSupervisor, DynamicSupervisor, GenServer and fult-tolerant</b> experiment. 
 
 ![render](https://user-images.githubusercontent.com/19523657/213333214-7e08856d-7d0e-4258-91a2-20dc73934519.gif)
+![render_1000](https://user-images.githubusercontent.com/19523657/213511584-a519bcdb-ed68-4f55-b053-dd1f9496586c.gif)
+
+
+
 
 # How does it works?
 Each Particle is a <b>GenServer</b> under a <b>DynamicSupervisor</b>.
