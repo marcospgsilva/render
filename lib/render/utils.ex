@@ -8,4 +8,8 @@ defmodule Render.Utils do
     |> String.replace("#PID<", "")
     |> String.replace(">", "")
   end
+
+  def random(limit) do
+    :rand.uniform(limit)
+  end
 end

@@ -14,6 +14,10 @@ config :render, RenderWeb.Endpoint,
   pubsub_server: Render.PubSub,
   live_view: [signing_salt: "IqFHxqmM"]
 
+config :render, :table,
+  x: 95,
+  y: 90
+
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.14.29",

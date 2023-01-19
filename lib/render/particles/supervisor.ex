@@ -23,7 +23,7 @@ defmodule Render.Particles.Supervisor do
   end
 
   def init(_args) do
-    DynamicSupervisor.init(strategy: :one_for_one, max_restarts: 100)
+    DynamicSupervisor.init(strategy: :one_for_one)
   end
 
   @doc """
@@ -39,11 +39,10 @@ defmodule Render.Particles.Supervisor do
     Starts a child under a DynamicSupervisor via PartitionSupervisor
   """
   def start_child do
-    DynamicSupervisor.start_child(
-      # Using VIA we can specify the key for each DynamicSupervisor under a PartitionSupervisor.
-      {:via, PartitionSupervisor, {__MODULE__, self()}},
-      {Render.Particles.ParticleServer, []}
-    )
+    # Using VIA we can specify the key for each DynamicSupervisor under a PartitionSupervisor.
+    {:via, PartitionSupervisor, {__MODULE__, self()}}
+    |> DynamicSupervisor.start_child({Render.Particles.ParticleServer, []})
+    |> elem(1)
   end
 
   @doc """
