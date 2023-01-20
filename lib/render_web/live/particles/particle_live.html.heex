@@ -9,4 +9,6 @@
     <h1 class="text-white text-5xl"><%= @particles_count %></h1>
 </div>
 
-<RenderWeb.ParticleComponent.particle particles={@particles}/>
+<%= for particle <- @particles do %>
+    <RenderWeb.ParticleComponent.particle particle={particle}/>
+<% end %>
