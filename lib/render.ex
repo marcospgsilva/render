@@ -9,6 +9,5 @@ defmodule Render do
 
   defdelegate start_new(particles_amount), to: Render.Particles.Supervisor
   defdelegate particles(), to: Render.Particles.Supervisor
-  defdelegate update_direction(new_direction), to: Render.Particles.Supervisor
-  defdelegate delete_particle(pid, key), to: Render.Particles.Supervisor
+  defdelegate delete_particle(pid), to: Render.Particles.Supervisor
 end

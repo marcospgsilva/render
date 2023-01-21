@@ -15,9 +15,9 @@ defmodule Render.Particles.Supervisor do
   @doc """
     Terminate a DynamicSupervisor child
   """
-  def delete_particle(pid, key) do
+  def delete_particle(pid) do
     DynamicSupervisor.terminate_child(
-      GenServer.whereis({:via, PartitionSupervisor, {__MODULE__, String.to_integer(key)}}),
+      GenServer.whereis({:via, PartitionSupervisor, {__MODULE__, self()}}),
       Helpers.pid(pid)
     )
   end
@@ -52,37 +52,25 @@ defmodule Render.Particles.Supervisor do
     particles =
       __MODULE__
       |> DynamicSupervisor.which_children()
-      |> Enum.map_reduce([], fn server, acc ->
-        find_and_apply(server, acc, fn child, key -> retrieve_child(child, key) end)
-      end)
+      |> Enum.map_reduce([], &retrieve_dynamic_supervisors/2)
       |> elem(1)
+      |> Enum.map(&retrieve_child/1)
 
     {:ok, particles}
   end
 
-  def update_direction(new_direction) do
-    updated_particle_servers =
-      __MODULE__
-      |> DynamicSupervisor.which_children()
-      |> Enum.map_reduce([], fn server, acc ->
-        find_and_apply(server, acc, fn {_, pid, _, _}, _key ->
-          ParticleServer.update_direction(pid, new_direction)
-        end)
-      end)
-      |> elem(1)
-
-    {:ok, updated_particle_servers}
-  end
-
-  def find_and_apply({key, _pid, _, _}, acc, fun) do
+  def retrieve_dynamic_supervisors({key, _pid, _, _}, acc) do
     case DynamicSupervisor.which_children({:via, PartitionSupervisor, {__MODULE__, key}}) do
       [] ->
         {[], acc}
 
       children ->
-        state = Enum.map(children, fn child -> fun.(child, key) end)
-        {state, state}
+        {children, Enum.concat(acc, children)}
     end
+  end
+
+  defp retrieve_child(child) do
+    retrieve_state(child)
   end
 
   defp retrieve_state({_, pid, _, _}) do
@@ -97,11 +85,5 @@ defmodule Render.Particles.Supervisor do
     pid
     |> ParticleServer.get_state()
     |> Map.put(:pid, Utils.format_pid(pid))
-  end
-
-  defp retrieve_child(child, key) do
-    child
-    |> retrieve_state()
-    |> Map.put(:key, key)
   end
 end

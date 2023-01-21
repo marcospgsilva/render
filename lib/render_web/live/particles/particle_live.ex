@@ -1,9 +1,16 @@
 defmodule RenderWeb.ParticleLive do
   use RenderWeb, :live_view
 
+  alias Phoenix.PubSub
+  alias Render.Engine
+
+  @topic Engine.topic()
+
   @impl Phoenix.LiveView
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, particles: [], particles_count: 0)}
+    {:ok, particles} = Render.particles()
+    schedule()
+    {:ok, assign(socket, particles: particles, particles_count: Enum.count(particles))}
   end
 
   @impl Phoenix.LiveView
@@ -23,14 +30,14 @@ defmodule RenderWeb.ParticleLive do
         %{"value" => direction},
         socket
       ) do
-    update_direction(direction)
+    broadcast_update_direction(direction)
     schedule()
     {:noreply, socket}
   end
 
   @impl Phoenix.LiveView
-  def handle_event("delete", %{"key" => key, "pid" => pid}, socket) do
-    Render.delete_particle(pid, key)
+  def handle_event("delete", %{"pid" => pid}, socket) do
+    Render.delete_particle(pid)
     {:noreply, socket}
   end
 
@@ -42,10 +49,8 @@ defmodule RenderWeb.ParticleLive do
     end
   end
 
-  defp update_direction(direction) do
-    direction
-    |> String.to_atom()
-    |> Render.update_direction()
+  defp broadcast_update_direction(direction) do
+    PubSub.broadcast(Render.PubSub, @topic, direction)
   end
 
   def schedule do

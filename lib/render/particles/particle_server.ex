@@ -6,8 +6,10 @@ defmodule Render.Particles.ParticleServer do
 
   alias Render.Engine
   alias Render.Particles.Particle
+  alias Phoenix.PubSub
 
   @interval 60
+  @topic Engine.topic()
 
   def start_link(_opts) do
     GenServer.start_link(__MODULE__, Particle.new())
@@ -17,12 +19,9 @@ defmodule Render.Particles.ParticleServer do
     GenServer.call(pid, :get_state)
   end
 
-  def update_direction(pid, new_direction) do
-    GenServer.cast(pid, {:update_direction, new_direction})
-  end
-
   @impl true
   def init(initial_state) do
+    PubSub.subscribe(Render.PubSub, @topic)
     schedule()
     {:ok, initial_state}
   end
@@ -33,15 +32,15 @@ defmodule Render.Particles.ParticleServer do
   end
 
   @impl true
-  def handle_cast({:update_direction, new_direction}, particle) do
-    particle = Engine.update_direction(particle, new_direction)
+  def handle_info(:update, particle) do
+    particle = Engine.update_position(particle)
+    schedule()
     {:noreply, particle}
   end
 
   @impl true
-  def handle_info(:update, position) do
-    particle = Engine.update_position(position)
-    schedule()
+  def handle_info(new_direction, particle) do
+    particle = Engine.update_direction(particle, String.to_atom(new_direction))
     {:noreply, particle}
   end
 

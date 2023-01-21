@@ -33,12 +33,14 @@ defmodule Render.EngineTest do
       assert final_x > initial_x and final_y > initial_y
     end
 
-    test "should reset x position and keep y if direction is right and current x axis is greater than 95" do
+    test "should reset x position and increase y if direction is right and current x axis is greater than 95" do
       initial_y = 45
       initial_x = 98
 
-      assert %{x: 5, y: ^initial_y} =
+      assert %{x: 5, y: final_y} =
                Engine.update_position(%Particle{x: initial_x, y: initial_y, direction: :right})
+
+      assert final_y > initial_y
     end
 
     test "should decrease x position and reset y to 5 if direction is left and current y axis is greater than 90" do

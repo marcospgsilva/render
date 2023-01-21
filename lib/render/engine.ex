@@ -3,6 +3,9 @@ defmodule Render.Engine do
   alias Render.Utils
 
   @x_limit Table.x_limit()
+  @topic "directions"
+
+  def topic, do: @topic
 
   def update_direction(particle, new_direction) do
     %{particle | direction: new_direction}
@@ -17,8 +20,9 @@ defmodule Render.Engine do
     %{particle | y: position_y + speed_up()}
   end
 
-  def update_position(%{direction: :right, x: position_x} = particle) when position_x >= 95 do
-    %{particle | x: 5}
+  def update_position(%{direction: :right, x: position_x, y: position_y} = particle)
+      when position_x >= 95 do
+    %{particle | x: 5, y: position_y + speed_up()}
   end
 
   def update_position(%{direction: :right, x: position_x, y: position_y} = particle) do
