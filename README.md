@@ -1,11 +1,8 @@
 # Render
-<b>Liveview re-rendering, PartitionSupervisor, DynamicSupervisor, GenServer and fult-tolerant</b> experiment. 
+<b>Liveview re-rendering, PartitionSupervisor, DynamicSupervisor, PubSub, GenServer and fult-tolerance</b> experiment. 
 
 ![render](https://user-images.githubusercontent.com/19523657/213333214-7e08856d-7d0e-4258-91a2-20dc73934519.gif)
 ![render_1000](https://user-images.githubusercontent.com/19523657/213511584-a519bcdb-ed68-4f55-b053-dd1f9496586c.gif)
-
-
-
 
 # How does it works?
 Each Particle is a <b>GenServer</b> under a <b>DynamicSupervisor</b>.
@@ -23,8 +20,8 @@ To start your Phoenix server:
   * Install dependencies with `mix deps.get`
   * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+Now you can visit [`localhost:4000/game`](http://localhost:4000/game) from your browser and start to playing.
 
 ## Follow me
 
-  * LinkedIn: https://www.linkedin.com/in/marcospgsilva/
+  * LinkedIn: [@marcospgsilva](https://www.linkedin.com/in/marcospgsilva/)
