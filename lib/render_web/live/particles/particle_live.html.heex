@@ -1,14 +1,47 @@
 <div class="flex flex-1 justify-center items-center flex-col">
-    <div class="flex flex-1 justify-center align-middle">
-            <button phx-click="new_direction" name="direction" type="submit" value="left" class="w-10 h-8 rounded-md bg-white m-2">&lt</button>
-        <%= for value <- [1, 2, 5, 10] do %>
-            <button phx-click="new_particles" name="particles_amount" type="submit" value={"#{value}"} class="w-10 h-8 rounded-md bg-white m-2"><%= value %></button>
-        <% end %>
-            <button phx-click="new_direction" name="direction" type="submit" value="right" class="w-10 h-8 rounded-md bg-white m-2">&gt</button>
-    </div>
-    <h1 class="text-white text-5xl"><%= @particles_count %></h1>
+  <div class="flex flex-1 justify-center align-middle">
+    <button
+      phx-click="new_direction"
+      name="direction"
+      type="submit"
+      value="left"
+      class="w-10 h-8 rounded-md bg-white m-2"
+    >
+      &lt
+    </button>
+    <button
+      phx-click="new_particles"
+      name="particles_amount"
+      type="submit"
+      value="1"
+      class="w-10 h-8 rounded-md bg-white m-2"
+    >
+      1
+    </button>
+    <button
+      phx-click="new_direction"
+      name="direction"
+      type="submit"
+      value="right"
+      class="w-10 h-8 rounded-md bg-white m-2"
+    >
+      &gt
+    </button>
+  </div>
+  <h1 class="text-white text-5xl"><%= @particles_amount %></h1>
 </div>
-
-<%= for particle <- @particles do %>
-    <RenderWeb.ParticleComponent.particle particle={particle}/>
-<% end %>
+<div id="particles-cointaier" phx-update="stream">
+  <div :for={{dom_id, particle} <- @streams.particles} id={dom_id}>
+    <div
+      phx-click="delete"
+      class="flex flex-1 h-[100px] w-[100px] absolute"
+      style={"left: #{particle.x}%;top: #{particle.y}%;"}
+      phx-value-pid={particle.pid}
+      phx-value-id={dom_id}
+    >
+      <svg width="100" height="100">
+        <rect width="100" height="100" style="fill:white" />
+      </svg>
+    </div>
+  </div>
+</div>

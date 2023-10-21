@@ -5,7 +5,7 @@ defmodule Render.Particles.Particle do
   @x_limit Table.x_limit()
   @y_limit Table.y_limit()
 
-  defstruct direction: :down, x: nil, y: nil
+  defstruct id: :crypto.strong_rand_bytes(8) |> Base.encode64(), direction: :down, x: nil, y: nil
 
   def new do
     %__MODULE__{

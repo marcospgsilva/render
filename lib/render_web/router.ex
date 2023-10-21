@@ -17,8 +17,7 @@ defmodule RenderWeb.Router do
   scope "/", RenderWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
-    live "/game", ParticleLive
+    live "/", ParticleLive
   end
 
   # Other scopes may use custom stacks.

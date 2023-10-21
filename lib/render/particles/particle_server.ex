@@ -8,7 +8,6 @@ defmodule Render.Particles.ParticleServer do
   alias Render.Particles.Particle
   alias Phoenix.PubSub
 
-  @interval 60
   @topic Engine.topic()
 
   def start_link(_opts) do
@@ -22,19 +21,19 @@ defmodule Render.Particles.ParticleServer do
   @impl true
   def init(initial_state) do
     PubSub.subscribe(Render.PubSub, @topic)
-    schedule()
+    Process.send(self(), :update, [])
     {:ok, initial_state}
   end
 
   @impl true
   def handle_call(:get_state, _from, state) do
+    Process.send(self(), :update, [])
     {:reply, state, state}
   end
 
   @impl true
   def handle_info(:update, particle) do
     particle = Engine.update_position(particle)
-    schedule()
     {:noreply, particle}
   end
 
@@ -42,9 +41,5 @@ defmodule Render.Particles.ParticleServer do
   def handle_info(new_direction, particle) do
     particle = Engine.update_direction(particle, String.to_atom(new_direction))
     {:noreply, particle}
-  end
-
-  def schedule do
-    Process.send_after(self(), :update, @interval)
   end
 end

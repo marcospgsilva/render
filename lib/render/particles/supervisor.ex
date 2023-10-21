@@ -52,9 +52,7 @@ defmodule Render.Particles.Supervisor do
     particles =
       __MODULE__
       |> DynamicSupervisor.which_children()
-      |> Enum.map_reduce([], &retrieve_dynamic_supervisors/2)
-      |> elem(1)
-      |> Enum.map(&retrieve_child/1)
+      |> Enum.reduce([], &retrieve_dynamic_supervisors/2)
 
     {:ok, particles}
   end
@@ -62,10 +60,12 @@ defmodule Render.Particles.Supervisor do
   def retrieve_dynamic_supervisors({key, _pid, _, _}, acc) do
     case DynamicSupervisor.which_children({:via, PartitionSupervisor, {__MODULE__, key}}) do
       [] ->
-        {[], acc}
+        acc
 
       children ->
-        {children, Enum.concat(acc, children)}
+        children
+        |> Enum.map(&retrieve_child/1)
+        |> Enum.concat(acc)
     end
   end
 
